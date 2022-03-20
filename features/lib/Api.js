@@ -2,6 +2,7 @@ const axios = require("axios");
 const applyCaseMiddleware = require("axios-case-converter").default;
 const Space = require("./Space");
 const AuthenticationMethod = require("./AuthenticationMethod");
+const SpaceMembership = require("./SpaceMembership");
 class Api {
   constructor(host, apiKey) {
     this.host = host;
@@ -24,7 +25,7 @@ class Api {
    * @returns {Repository}
    */
   spaces() {
-    return new Repository({ client: this, endpoint: "/spaces" });
+    return new Repository({ client: this, endpoint: "/spaces", model: Space });
   }
 
   /**
@@ -34,6 +35,18 @@ class Api {
     return new Repository({
       client: this,
       endpoint: "/authentication_methods",
+      model: AuthenticationMethod,
+    });
+  }
+
+  /**
+   * @returns {Repository}
+   */
+  spaceMemberships() {
+    return new Repository({
+      client: this,
+      endpoint: "/space_memberships",
+      model: SpaceMembership,
     });
   }
 
@@ -47,16 +60,20 @@ class Api {
 }
 exports.Api = Api;
 class Repository {
-  constructor({ client, endpoint }) {
+  constructor({ client, endpoint, model }) {
     this.client = client;
     this.endpoint = endpoint;
+    this.model = model;
   }
 
-  create(model) {
-    return this.client.post(this.endpoint, model);
+  create(data) {
+    const model = this.model;
+    return this.client.post(this.endpoint, data).then(function (response) {
+      return new model(response.data);
+    });
   }
 
-  findOrCreateBy(model) {
-    return this.create(model);
+  findOrCreateBy(data) {
+    return this.create(data);
   }
 }
