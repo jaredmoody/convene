@@ -20,9 +20,14 @@ class SpacesController < ApplicationController
     @space = Space.new(space_params)
     skip_policy_scope
     authorize(@space)
-    Blueprint.new(client:
+    blueprint = Blueprint.new(client:
       { name: space_params[:name],
-        space: SystemTestSpace::DEFAULT_SPACE_CONFIG.merge(space_params).with_indifferent_access }).find_or_create!
+        space: SystemTestSpace::DEFAULT_SPACE_CONFIG.merge(space_params).with_indifferent_access })
+    if @space.persisted?
+      render json: Space::Serializer.new(@space).to_json
+    else
+      render json: Space::Serializer.new(@space).to_json, status: :unprocessable_entity
+    end
   end
 
   def destroy

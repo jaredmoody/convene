@@ -7,5 +7,5 @@ const Space = require('../../lib/Space');
 defineParameterType({
   name: "space",
   regexp: /("[^"]*" )?Space/,
-  transformer: (name = "System Test") => new Space(name.trim().replace(/\"/g,'')),
+  transformer: (name = "System Test") => new Space({ name: name.trim().replace(/\"/g,'') }),
 });

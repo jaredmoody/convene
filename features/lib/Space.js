@@ -1,8 +1,15 @@
 
 class Space {
-  constructor(spaceName) {
-    this.name = spaceName;
-    this.slug = spaceName.replace(/\s+/g, '-').toLowerCase();
+  constructor({ name, slug, id }) {
+    this.name = name;
+    this.slug = slug || name.replace(/\s+/g, '-').toLowerCase();
+    this.id = id;
+  }
+
+  asParams() {
+    return {
+      space: { name: this.name, slug: this.slug }
+    }
   }
 }
 
