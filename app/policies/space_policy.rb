@@ -17,7 +17,12 @@ class SpacePolicy < ApplicationPolicy
   def destroy?
     person.operator?
   end
+
   alias create? destroy?
+
+  def permit(params)
+    params.require(:space).permit(:name, :slug, :theme, :blueprint)
+  end
 
   class Scope < ApplicationScope
     def resolve

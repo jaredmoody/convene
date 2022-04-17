@@ -17,13 +17,12 @@ class SpacesController < ApplicationController
   end
 
   def create
-    @space = Space.new(space_params)
     skip_policy_scope
+    client = Client.find_or_create_by(name: space_params[:name])
+    authorize(client)
+    @space = Space.new(space_params.merge(client: client))
     authorize(@space)
-    blueprint = Blueprint.new(client:
-      { name: space_params[:name],
-        space: SystemTestSpace::DEFAULT_SPACE_CONFIG.merge(space_params).with_indifferent_access })
-    if @space.persisted?
+    if @space.save
       render json: Space::Serializer.new(@space).to_json
     else
       render json: Space::Serializer.new(@space).to_json, status: :unprocessable_entity
@@ -35,7 +34,7 @@ class SpacesController < ApplicationController
   end
 
   def space_params
-    params.require(:space).permit(:name, :slug, :theme)
+    @space_params ||= policy(Space).permit(params)
   end
 
   helper_method def space
