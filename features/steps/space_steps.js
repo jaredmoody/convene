@@ -13,9 +13,18 @@ Given("{a} {space}", function (_, space) {
 });
 
 Given("{a} fresh {space}", function (_, space) {
+  this.testId = this.testId || crypto.randomUUID();
   const api = new Api(appUrl(), process.env.OPERATOR_API_KEY);
 
-  return api.spaces().create(space);
+  this.spaces = this.spaces || {};
+
+  return api.spaces().create(space)
+    .then(
+      ((space) => {
+        console.error('wtf');
+        return this.spaces[space.name] = space;
+      })
+  )
 });
 
 Given("a Space with a Room", function () {
@@ -38,6 +47,8 @@ Given(
     this.testId = this.testId || crypto.randomUUID();
     this.actors = this.actors || {};
     this.actors[actor.email] = actor;
+
+    space = this.spaces[space.name] || space;
     actor.email = `${this.testId}+${actor.email}`;
     const api = new Api(appUrl(), process.env.OPERATOR_API_KEY);
     const toCreate = new AuthenticationMethod({
@@ -48,11 +59,10 @@ Given(
     return api
       .authenticationMethods()
       .findOrCreateBy(toCreate)
-      .then((authenticationMethod) => authenticationMethod.person)
-      .then((person) =>
+      .then((authenticationMethod) =>
         api
           .spaceMemberships()
-          .findOrCreateBy(new SpaceMembership({ space, person }))
+          .findOrCreateBy(new SpaceMembership({ space, person: authenticationMethod.person }))
       );
   }
 );
