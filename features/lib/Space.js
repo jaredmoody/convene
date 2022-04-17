@@ -8,7 +8,7 @@ class Space {
 
   asParams() {
     return {
-      space: { name: this.name, slug: this.slug }
+      space: { name: this.name, slug: this.slug, blueprint: 'system_test' }
     }
   }
 }

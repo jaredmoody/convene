@@ -13,7 +13,7 @@ When(
   function (invitation, _, space, actor, invitations) {
     return actor
       .signIn(this.driver, space)
-      .then(() => new SpaceEditPage(this.driver, space))
+      .then(() => new SpaceEditPage(this.driver, space).visit())
       .then((page) => page.inviteAll(invitations.hashes()));
   }
 );
@@ -26,7 +26,8 @@ When(
    * @param {Actor} actor
    */
   function (_, invitation, _2, space, _3, actor) {
-    return invitation.accept(this.driver)
+    return invitation
+      .accept(this.driver)
       .then(() => actor.authenticationCode())
       .then((code) => new SignInPage(this.driver, space).submitCode(code));
   }
@@ -48,9 +49,11 @@ Then(
   /**
    * @param {Invitation} invitation
    */
-  async function (_a, invitation, _a2, space, _a3, status) {
-    const page = new SpaceEditPage(this.driver, space);
-    assert(await page.hasInvitation({ invitation, status }));
+  function (_a, invitation, _a2, space, _a3, status) {
+    return new SpaceEditPage(this.driver, space)
+      .visit()
+      .then((page) => page.hasInvitation({ invitation, status }))
+      .then((result) => assert(result));
   }
 );
 
