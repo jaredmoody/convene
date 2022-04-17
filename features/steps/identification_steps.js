@@ -19,7 +19,7 @@ Given("a {actor} Authenticated Session",
 /** @param {Actor} actor */
 function (actor) {
   this.actor = actor;
-  const space = new Space({ space: "System Test" });
+  const space = new Space({ name: "System Test" });
   return this.actor.signIn(this.driver, space)
 });
 
