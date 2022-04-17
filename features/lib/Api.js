@@ -3,8 +3,6 @@ const { pascalCase } = require('change-case');
 const applyCaseMiddleware = require("axios-case-converter").default;
 const Space = require("./Space");
 const AuthenticationMethod = require("./AuthenticationMethod");
-const SpaceMembership = require("./SpaceMembership");
-const { camelCase } = require("lodash");
 class Api {
   constructor(host, apiKey) {
     this.host = host;
@@ -38,17 +36,6 @@ class Api {
       client: this,
       endpoint: "/authentication_methods",
       model: AuthenticationMethod,
-    });
-  }
-
-  /**
-   * @returns {Repository}
-   */
-  spaceMemberships() {
-    return new Repository({
-      client: this,
-      endpoint: "/space_memberships",
-      model: SpaceMembership,
     });
   }
 
