@@ -40,6 +40,19 @@ RSpec.describe '/spaces/', type: :request do
         expect(space.space_memberships).to be_empty
         expect(space.utility_hookups).to be_empty
       end
+
+      it 'creates a space using a blueprint' do
+        name = "System Test #{SecureRandom.hex(4)}"
+        post spaces_path,
+             params: { space: { name: name, blueprint: 'system_test' } },
+             headers: authorization_headers(ENV['OPERATOR_API_KEY']),
+             as: :json
+        expect(response).to be_ok
+        space = Space.find_by(name: name)
+        expect(space.rooms).not_to be_empty
+        expect(space.space_memberships).not_to be_empty
+        expect(space.utility_hookups).not_to be_empty
+      end
     end
   end
 

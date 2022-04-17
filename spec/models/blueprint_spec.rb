@@ -43,5 +43,14 @@ RSpec.describe Blueprint do
       expect(space.utility_hookups.first.utility.client_id).to eql('1234')
       expect(space.rooms.first.furniture_placements.first.furniture.content).to eql("Hey there!")
     end
+
+    it "Updates the provided space when it's given" do
+      space = Space.create(name: "Client A's Space", client: Client.create(name: "Client A"))
+
+      Blueprint.new(EXAMPLE_CONFIG.merge(space: space)).find_or_create!
+
+      expect(space.rooms.count).to eql(1)
+      expect(space.utility_hookups.count).to eql(1)
+    end
   end
 end
